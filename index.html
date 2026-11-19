@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="light dark">
+<title>Guides gratuits · Demande à l'IA</title>
+<style>
+:root{
+  --bg:#f3f1ff; --ink:#1b1740; --muted:#585580; --card:rgba(255,255,255,.78); --line:rgba(91,61,245,.2);
+  --accent:#5b3df5; --accent-ink:#ffffff; --accent2:#d6336c; --ok:#0b8a5e; --ok-bg:rgba(16,185,129,.12);
+  --err:#b4233f; --err-bg:rgba(214,51,108,.1); --field:#ffffff; --shadow:0 18px 50px rgba(61,40,170,.18);
+  --blob1:rgba(91,61,245,.28); --blob2:rgba(214,51,108,.2); --blob3:rgba(14,165,233,.22);
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e0b22; --ink:#f2f0ff; --muted:#aaa6d8; --card:rgba(32,27,72,.7); --line:rgba(160,142,255,.28);
+    --accent:#8c75ff; --accent-ink:#120d33; --accent2:#ff6b9d; --ok:#4fe3b0; --ok-bg:rgba(79,227,176,.12);
+    --err:#ff8aa6; --err-bg:rgba(255,107,157,.12); --field:#17133a; --shadow:0 18px 50px rgba(0,0,0,.45);
+    --blob1:rgba(140,117,255,.3); --blob2:rgba(255,107,157,.2); --blob3:rgba(56,189,248,.2);
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; min-height:100vh; min-height:100dvh; color:var(--ink); background:var(--bg);
+  font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  padding:max(20px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(28px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));
+  display:flex; justify-content:center; align-items:flex-start; position:relative; overflow-x:hidden;
+}
+body::before{
+  content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background:
+    radial-gradient(60vmax 45vmax at 12% -8%, var(--blob1), transparent 60%),
+    radial-gradient(55vmax 40vmax at 100% 18%, var(--blob2), transparent 60%),
+    radial-gradient(60vmax 45vmax at 40% 112%, var(--blob3), transparent 60%);
+}
+main{width:100%; max-width:520px; margin-top:clamp(8px,6vh,56px); display:grid; gap:16px; min-width:0}
+.marque{display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.02em; color:var(--muted); font-size:.92rem}
+.puce{width:12px; height:12px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent2)); box-shadow:0 0 0 4px var(--line)}
+h1{font-size:clamp(1.9rem,7.5vw,2.6rem); line-height:1.08; margin:4px 0 0; letter-spacing:-.02em; text-wrap:balance}
+h1 span{background:linear-gradient(100deg,var(--accent),var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent}
+.intro{margin:10px 0 0; color:var(--muted); font-size:1.05rem; max-width:44ch}
+.carte{
+  background:var(--card); border:1px solid var(--line); border-radius:22px; padding:20px;
+  box-shadow:var(--shadow); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
+}
+label{display:block; font-weight:700; margin-bottom:8px}
+.champ{
+  width:100%; min-height:58px; border-radius:14px; border:2px solid var(--line); background:var(--field); color:var(--ink);
+  font:700 1.55rem/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; letter-spacing:.14em; text-align:center;
+  text-transform:uppercase; padding:10px 12px;
+}
+.champ::placeholder{color:var(--muted); opacity:.55; letter-spacing:.14em}
+.champ:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 4px var(--line)}
+.aide{margin:8px 0 0; font-size:.9rem; color:var(--muted)}
+.btn{
+  display:flex; align-items:center; justify-content:center; gap:8px; width:100%; min-height:54px; margin-top:14px; padding:12px 18px;
+  border:0; border-radius:14px; font-weight:700; font-size:1.05rem; line-height:1.2; font-family:inherit; text-decoration:none; cursor:pointer;
+  color:var(--accent-ink); background:linear-gradient(100deg,var(--accent),color-mix(in srgb,var(--accent) 55%,var(--accent2)));
+  box-shadow:0 10px 24px color-mix(in srgb,var(--accent) 35%,transparent);
+}
+.btn:active{transform:translateY(1px)}
+.btn[disabled]{opacity:.65; cursor:progress}
+.btn.second{background:transparent; color:var(--ink); border:2px solid var(--line); box-shadow:none}
+.btn:focus-visible,.lien:focus-visible,summary:focus-visible{outline:3px solid var(--accent); outline-offset:3px}
+.etat{margin:12px 0 0; font-weight:600}
+.etat:empty{display:none}
+.etat.err{color:var(--err); background:var(--err-bg); border-radius:12px; padding:10px 12px}
+.etat.info{color:var(--muted)}
+.resultat{display:grid; gap:2px}
+.ok{display:inline-flex; align-items:center; gap:8px; width:fit-content; color:var(--ok); background:var(--ok-bg); font-weight:700; border-radius:999px; padding:5px 12px; font-size:.92rem}
+.resultat h2{margin:10px 0 2px; font-size:1.35rem; line-height:1.2; text-wrap:balance}
+.meta{margin:0; color:var(--muted); font-size:.92rem}
+.lien{background:none; border:0; color:var(--accent); font-weight:600; font-size:.98rem; font-family:inherit; text-decoration:underline; padding:14px 0 0; cursor:pointer; text-align:left}
+details{border-top:1px solid var(--line); padding:12px 0}
+details:first-of-type{margin-top:0; border-top:0; padding-top:0}
+summary{font-weight:700; cursor:pointer; padding:4px 0; list-style-position:inside}
+details p,details ol,details ul{margin:8px 0 0; color:var(--muted); font-size:.97rem}
+details ol,details ul{padding-left:1.3em}
+details li+li{margin-top:6px}
+.pied{font-size:.85rem; color:var(--muted); text-align:center; margin:4px 0 0}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:no-preference){ .btn{transition:transform .08s ease} }
+</style>
+</head>
+<body>
+<main>
+  <div class="marque"><span class="puce" aria-hidden="true"></span>Demande à l'IA</div>
+  <div>
+    <h1>Tes guides <span>gratuits</span></h1>
+    <p class="intro">Entre le code du guide. Tu le trouves dans le commentaire épinglé sous la vidéo.</p>
+  </div>
+
+  <section class="carte" aria-labelledby="titre-code">
+    <form id="form" autocomplete="off" novalidate>
+      <div id="saisie">
+        <label for="code" id="titre-code">Ton code</label>
+        <input class="champ" id="code" name="code" type="text" inputmode="text" maxlength="14"
+               placeholder="XXXX-XXXX" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false"
+               aria-describedby="aide etat">
+        <p class="aide" id="aide">8 caractères. Le tiret est facultatif, majuscules ou minuscules, comme tu veux.</p>
+        <button class="btn" id="ok" type="submit">Ouvrir mon guide</button>
+      </div>
+      <p class="etat info" id="etat" role="status" aria-live="polite"></p>
+    </form>
+
+    <div class="resultat" id="resultat" hidden>
+      <span class="ok">✓ Code reconnu</span>
+      <h2 id="r-titre"></h2>
+      <p class="meta" id="r-meta"></p>
+      <a class="btn" id="r-dl" href="#" download>Télécharger le PDF</a>
+      <a class="btn second" id="r-open" href="#" target="_blank" rel="noopener">Ouvrir dans le navigateur</a>
+      <button class="lien" id="r-autre" type="button">Entrer un autre code</button>
+    </div>
+  </section>
+
+  <section class="carte" aria-label="Aide">
+    <details>
+      <summary>Comment ça marche ?</summary>
+      <ol>
+        <li>Regarde la vidéo qui t'intéresse sur TikTok.</li>
+        <li>Dans ses commentaires, repère le commentaire épinglé : il contient le code du guide.</li>
+        <li>Entre ce code ici : le guide s'ouvre. Chaque vidéo a son propre guide et son propre code.</li>
+      </ol>
+    </details>
+    <details>
+      <summary>Ça ne marche pas ?</summary>
+      <ul>
+        <li>Vérifie le code : 8 caractères, sans le chiffre zéro ni la lettre O (ni I, ni L, ni 1).</li>
+        <li>Ouvre cette page dans Safari ou Chrome plutôt que dans l'appli TikTok.</li>
+        <li>Si le téléchargement ne démarre pas, utilise « Ouvrir dans le navigateur ».</li>
+        <li>Le code de la vidéo d'hier n'ouvre pas le guide d'aujourd'hui : chaque guide a le sien.</li>
+      </ul>
+    </details>
+  </section>
+  <p class="pied">Gratuit. Cette page ne collecte aucune donnée : ton code est vérifié sur ton appareil, rien n'est envoyé.</p>
+  <noscript><p class="etat err">Cette page a besoin de JavaScript pour vérifier ton code.</p></noscript>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var champ = $("code"), form = $("form"), etat = $("etat"), bouton = $("ok");
+  var urlPdf = null, manifeste = null;
+
+  function message(texte, genre) { etat.textContent = texte || ""; etat.className = "etat " + (genre || "info"); }
+  function normaliser(s) { return s.toUpperCase().replace(/[^A-Z0-9]/g, ""); }
+  function hex(buf) { return Array.prototype.map.call(new Uint8Array(buf), function (b) { return ("0" + b.toString(16)).slice(-2); }).join(""); }
+  function depuisB64(s) { var bin = atob(s), o = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) o[i] = bin.charCodeAt(i); return o; }
+  function mo(n) { return (n / 1048576).toFixed(1).replace(".", ",") + " Mo"; }
+  function occupe(oui) { bouton.disabled = oui; champ.readOnly = oui; }
+
+  async function charger(chemin, json) {
+    var r = await fetch(chemin, { cache: "no-cache" });
+    if (!r.ok) throw new Error("http " + r.status);
+    return json ? r.json() : r.arrayBuffer();
+  }
+
+  async function ouvrir(code) {
+    if (!window.crypto || !crypto.subtle) { message("Ce navigateur ne permet pas de vérifier le code. Ouvre cette page dans Safari ou Chrome.", "err"); return; }
+    occupe(true); message("Vérification du code…", "info");
+    try {
+      if (!manifeste) manifeste = await charger("g/manifest.json", true);
+      var base = await crypto.subtle.importKey("raw", new TextEncoder().encode(code), "PBKDF2", false, ["deriveBits"]);
+      var bits = await crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt: depuisB64(manifeste.salt), iterations: manifeste.it }, base, 256);
+      var empreinte = hex(await crypto.subtle.digest("SHA-256", bits));
+      var entree = manifeste.g.filter(function (g) { return g.c === empreinte; })[0];
+      if (!entree) { message("Ce code ne correspond à aucun guide. Vérifie-le dans le commentaire épinglé de la vidéo (8 caractères, le tiret est facultatif).", "err"); return; }
+      message("Code reconnu, ouverture du guide…", "info");
+      var donnees = new Uint8Array(await charger("g/" + entree.f, false));
+      var cle = await crypto.subtle.importKey("raw", bits, "AES-GCM", false, ["decrypt"]);
+      var clair = new Uint8Array(await crypto.subtle.decrypt({ name: "AES-GCM", iv: donnees.slice(0, 12) }, cle, donnees.slice(12)));
+      var n = new DataView(clair.buffer, clair.byteOffset, 4).getUint32(0);
+      var entete = JSON.parse(new TextDecoder().decode(clair.slice(4, 4 + n)));
+      var pdf = clair.slice(4 + n);
+      if (urlPdf) URL.revokeObjectURL(urlPdf);
+      urlPdf = URL.createObjectURL(new Blob([pdf], { type: "application/pdf" }));
+      $("r-titre").textContent = entete.titre;
+      $("r-meta").textContent = "Guide PDF · " + mo(pdf.length);
+      $("r-dl").href = urlPdf; $("r-dl").setAttribute("download", entete.fichier);
+      $("r-open").href = urlPdf;
+      $("saisie").hidden = true; etat.hidden = true; $("resultat").hidden = false;
+      $("r-dl").focus();
+    } catch (e) {
+      message("Impossible de charger le guide. Vérifie ta connexion et réessaie.", "err");
+    } finally { occupe(false); }
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var code = normaliser(champ.value);
+    if (code.length !== 8) { message("Entre le code complet : 8 caractères.", "err"); champ.focus(); return; }
+    ouvrir(code);
+  });
+  $("r-autre").addEventListener("click", function () {
+    $("resultat").hidden = true; $("saisie").hidden = false; etat.hidden = false;
+    message(""); champ.value = ""; champ.focus();
+  });
+  champ.addEventListener("input", function () { if (etat.classList.contains("err")) message(""); });
+})();
+</script>
+</body>
+</html>
